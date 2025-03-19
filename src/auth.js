@@ -1,6 +1,6 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./firebase"; // Firebase auth import kiya
-
+import { signOut } from "firebase/auth";
 // Signup Function
 export const signUp = async (email, password) => {
   try {
@@ -22,3 +22,13 @@ export const signIn = async (email, password) => {
     throw error;
   }
 };
+
+export const logout = async () => {
+    try {
+      await signOut(auth);
+      console.log("User logged out");
+    } catch (error) {
+      console.error("Logout Error:", error.message);
+      throw error;
+    }
+  };

@@ -1,0 +1,36 @@
+🚀 XecureVault Roadmap
+1️⃣ Setup & Initialization (🔹 Day 1)
+✅ Create GitHub Repo & set up project structure.
+✅ Set up Firebase (Authentication + Firestore Database).
+✅ Plan database schema:
+
+Users Collection (Stores user info).
+Passwords Collection (Encrypted passwords linked to users).
+2️⃣ Authentication System (🔹 Day 1-2)
+✅ Build Signup & Login Pages with Firebase Auth.
+✅ Implement Session Management (Keep users logged in securely).
+✅ Auto-logout after inactivity.
+
+3️⃣ Core Password Management (🔹 Day 2-3)
+✅ Encrypt passwords before storing them using AES encryption.
+✅ Build Dashboard UI (List stored passwords, Search bar).
+✅ Implement Copy to Clipboard for easy access.
+
+4️⃣ Advanced Features (🔹 Day 3-4)
+✅ Add Password Generator (customizable length & complexity).
+✅ Implement Backup/Export Feature (download encrypted passwords).
+✅ Sync passwords across devices (data stored in Firestore).
+
+5️⃣ Final Testing & Deployment (🔹 Day 4-5)
+✅ Optimize UI & fix bugs.
+✅ Deploy frontend on Firebase Hosting / Vercel.
+✅ Ensure secure database rules (users can only access their own passwords).
+✅ Add GitHub integration for version control.
+
+🔥 Future Enhancements (Later Updates)
+🔹 Security Insights (Weak password detection).
+🔹 Two-Factor Authentication (Extra login security).
+🔹 Emergency Access (Trusted contact for password recovery).
+
+Next Step: Start with Setup & Authentication! 🚀
+Let me know if you want any tweaks to this plan! 😎

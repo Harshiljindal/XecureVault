@@ -1,34 +1,51 @@
-import { db } from './firebase';
-import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
+import { db } from "./firebase";
+import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import CryptoJS from "crypto-js";
 
-// Save password for a specific user
+// SECRET KEY for encryption (Keep this safe, or derive it from user login)
+const SECRET_KEY = "XecureVault123!@#"; // Change this to something more secure
 
-// Fetch passwords for the logged-in user
-export const fetchPasswords = async (userId) => {
-  try {
-    const q = query(collection(db, `passwords/${userId}/userPasswords`));
-    const querySnapshot = await getDocs(q);
-    const passwords = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    return passwords;
-  } catch (error) {
-    console.error('Error fetching passwords:', error);
-    return [];
-  }
+// Function to encrypt password
+const encryptPassword = (password) => {
+  return CryptoJS.AES.encrypt(password, SECRET_KEY).toString();
 };
+
+// Function to decrypt password
+const decryptPassword = (encryptedPassword) => {
+  const bytes = CryptoJS.AES.decrypt(encryptedPassword, SECRET_KEY);
+  return bytes.toString(CryptoJS.enc.Utf8);
+};
+
+// Save password to Firestore
 export const savePassword = async (userId, website, username, password) => {
   try {
-    console.log("Saving password for user:", userId);
-    console.log("Data:", { website, username, password });
-
-    await addDoc(collection(db, `passwords/${userId}/userPasswords`), {
+    const encryptedPassword = encryptPassword(password); // Encrypt before saving
+    await addDoc(collection(db, "passwords"), {
+      userId,
       website,
       username,
-      password,
-      timestamp: new Date()
+      password: encryptedPassword,
     });
-
-    console.log('✅ Password saved successfully');
+    console.log("Password saved successfully!");
   } catch (error) {
-    console.error('❌ Error saving password:', error);
+    console.error("Error saving password:", error);
+  }
+};
+
+// Fetch passwords from Firestore (Only for logged-in user)
+export const fetchPasswords = async (userId) => {
+  try {
+    const q = query(collection(db, "passwords"), where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
+    const passwords = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      website: doc.data().website,
+      username: doc.data().username,
+      password: decryptPassword(doc.data().password), // Decrypt when fetching
+    }));
+    return passwords;
+  } catch (error) {
+    console.error("Error fetching passwords:", error);
+    return [];
   }
 };

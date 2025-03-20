@@ -1,5 +1,5 @@
 import { db } from "./firebase";
-import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
 import CryptoJS from "crypto-js";
 
 // SECRET KEY for encryption (Keep this safe, or derive it from user login)
@@ -47,5 +47,15 @@ export const fetchPasswords = async (userId) => {
   } catch (error) {
     console.error("Error fetching passwords:", error);
     return [];
+  }
+};
+
+// Delete password from Firestore using its document ID
+export const deletePassword = async (passwordId) => {
+  try {
+    await deleteDoc(doc(db, "passwords", passwordId));
+    console.log("Password deleted successfully!");
+  } catch (error) {
+    console.error("Error deleting password:", error);
   }
 };

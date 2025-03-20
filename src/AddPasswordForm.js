@@ -1,52 +1,31 @@
 import React, { useState } from 'react';
-import { db } from './firebase'; // Import firestore instance
-import { collection, addDoc } from 'firebase/firestore'; // Import firestore methods
 
-function AddPasswordForm({ user }) {
-  const [service, setService] = useState('');
+function AddPasswordForm({ onSave }) {
+  const [website, setWebsite] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (!service || !username || !password) {
-      setError('Please fill in all fields');
+    if (!website || !username || !password) {
+      alert("Please fill all fields");
       return;
     }
-
-    const newPassword = {
-      service,   // Website name
-      username,  // Username
-      password,  // Password
-      email: user.email,  // Authenticated user email
-    };
-
-    try {
-      // Save password to Firestore under "passwords" collection
-      await addDoc(collection(db, 'passwords'), newPassword);
-      setService('');
-      setUsername('');
-      setPassword('');
-      setError('');
-      alert('Password saved successfully!');
-    } catch (err) {
-      setError('Error saving password: ' + err.message);
-      console.error('Error saving password: ', err);
-    }
+    onSave(website, username, password);
+    setWebsite('');
+    setUsername('');
+    setPassword('');
   };
 
   return (
     <div>
       <h3>Add New Password</h3>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Service Name"
-          value={service}
-          onChange={(e) => setService(e.target.value)}
+          placeholder="Website Name"
+          value={website}
+          onChange={(e) => setWebsite(e.target.value)}
           required
         />
         <br />
@@ -66,7 +45,7 @@ function AddPasswordForm({ user }) {
           required
         />
         <br />
-        <button type="submit">Add Password</button>
+        <button type="submit">Save Password</button>
       </form>
     </div>
   );

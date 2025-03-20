@@ -1,0 +1,266 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body */
+body {
+    background: #1a1a1a;
+    font-family: Arial, sans-serif;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 110vh;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+/* Welcome Message */
+.welcome-message {
+    width: 88%;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    padding: 8px;
+    background: #1a1a1a;
+    box-shadow: 0px 6px 15px #101010;
+    margin-top: 140px;
+    word-wrap: break-word;
+}
+
+/* Password Entry Section */
+.password-entry {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    width: 88%;
+    padding: 12px;
+    background: #1a1a1a;
+    border-radius: 12px;
+    box-shadow: 4px 4px 12px #101010, -4px -4px 12px #252525;
+    margin-top: 20px;
+}
+
+.input-field {
+    flex: 1;
+    padding: 12px;
+    margin: 5px;
+    border-radius: 12px;
+    border: none;
+    background: #1a1a1a;
+    box-shadow: inset 4px 4px 8px #101010, inset -4px -4px 8px #252525;
+    color: #fff;
+}
+
+.input-field:focus {
+    outline: none;
+    box-shadow: inset 4px 4px 8px #00f0ff, inset -4px -4px 8px #252525;
+}
+
+/* Search Bar */
+.search-bar {
+    width: 88%;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    background: #1a1a1a;
+    box-shadow: inset 4px 4px 8px #101010, inset -4px -4px 8px #252525;
+    color: #fff;
+    font-size: 16px;
+    margin-top: 15px;
+}
+
+.search-bar:focus {
+    box-shadow: 0 0 12px #00f0ff;
+    outline: none;
+}
+
+/* Stored Passwords Section */
+.password-table {
+    width: 88%;
+    margin-top: 20px;
+    background: #1a1a1a;
+    border-radius: 12px;
+    box-shadow: 4px 4px 12px #101010, -4px -4px 12px #252525;
+    padding: 10px;
+}
+
+.password-table th,
+.password-table td {
+    padding: 12px;
+    text-align: left;
+}
+
+.password-table th {
+    background-color: #121212;
+    border-radius: 10px;
+}
+
+.password-table td {
+    background-color: #222;
+    border-radius: 10px;
+}
+
+.password-table button {
+    background: #1a1a1a;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    box-shadow: 4px 4px 12px #101010, -4px -4px 12px #252525;
+    color: #fff;
+    cursor: pointer;
+}
+
+.password-table button:hover {
+    background: #ff6600;
+}
+
+/* Save Password Button (Customized) */
+.add-button {
+    width: 98%;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    color: #fff;
+    background: #1a1a1a;
+    box-shadow: 4px 4px 12px #101010, -4px -4px 12px #252525;
+    margin-top: 15px;
+    cursor: pointer;
+}
+
+.add-button:hover {
+    background: #4CAF50; /* Green for save action */
+}
+
+/* Bottom Section */
+.bottom-bar {
+    width: 88%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 12px;
+    background: #1a1a1a;
+    box-shadow: 4px 4px 12px #101010, -4px -4px 12px #252525;
+}
+
+.logout-button,
+.export-button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    color: #fff;
+    background: #1a1a1a;
+    box-shadow: 4px 4px 12px #101010, -4px -4px 12px #252525;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.logout-button:hover,
+.export-button:hover {
+    background: #ff6600;
+}
+
+.export-section input[type="file"] {
+    margin-top: 10px;
+    padding: 10px;
+    color: #fff;
+    background: #333;
+    border-radius: 12px;
+    border: none;
+    box-shadow: 4px 4px 12px #101010, -4px -4px 12px #252525;
+}
+
+/* Media Query for Small Screens */
+@media screen and (max-width: 768px) {
+    .welcome-message {
+        font-size: 22px;
+        margin-top: 40px;
+    }
+
+    .password-entry {
+        flex-direction: column;
+        width: 93%;
+        margin-top: 15px;
+    }
+
+    .input-field {
+        font-size: 14px;
+        margin: 5px 0;
+    }
+
+    .search-bar {
+        font-size: 14px;
+    }
+
+    .password-table {
+        width: 93%;
+        margin-top: 15px;
+    }
+
+    .bottom-bar {
+        width: 93%;
+        padding: 12px;
+    }
+
+    .logout-button,
+    .export-button {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .add-button {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+/* Media Query for Very Small Screens */
+@media screen and (max-width: 480px) {
+    .welcome-message {
+        font-size: 18px;
+        margin-top: 20px;
+    }
+
+    .password-entry {
+        flex-direction: column;
+        width: 86%;
+    }
+
+    .input-field {
+        font-size: 12px;
+        margin: 5px 0;
+    }
+
+    .search-bar {
+        font-size: 12px;
+    }
+
+    .password-table {
+        width: 86%;
+    }
+
+    .bottom-bar {
+        width: 86%;
+        padding: 10px;
+    }
+
+    .logout-button,
+    .export-button {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .add-button {
+        font-size: 12px;
+        padding: 8px;
+    }
+}

@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { fetchPasswords, savePassword, deletePassword } from './firestoreService';
 import { auth } from './firebase';
-import AddPasswordForm from './AddPasswordForm';
 import * as XLSX from "xlsx";
+import './Dashboard.css';
 
 function Dashboard({ user, setUser }) {
   const [passwords, setPasswords] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [copyMessage, setCopyMessage] = useState("");
+  const [website, setWebsite] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   useEffect(() => {
     if (user) {
@@ -15,20 +18,19 @@ function Dashboard({ user, setUser }) {
     }
 
     let inactivityTimer;
-
     const resetTimer = () => {
       clearTimeout(inactivityTimer);
       inactivityTimer = setTimeout(() => {
         alert("You have been logged out due to inactivity.");
         handleLogout();
-      }, 5 * 60 * 1000); // 5 minutes
+      }, 5 * 60 * 1000);
     };
 
     window.addEventListener("mousemove", resetTimer);
     window.addEventListener("keypress", resetTimer);
     window.addEventListener("click", resetTimer);
 
-    resetTimer(); // Start timer
+    resetTimer();
 
     return () => {
       window.removeEventListener("mousemove", resetTimer);
@@ -43,10 +45,13 @@ function Dashboard({ user, setUser }) {
     setUser(null);
   };
 
-  const handleSavePassword = async (website, username, password) => {
-    if (!user) return;
+  const handleSavePassword = async () => {
+    if (!user || !website || !username || !password) return;
     await savePassword(user.uid, website, username, password);
     fetchPasswords(user.uid).then(setPasswords);
+    setWebsite("");
+    setUsername("");
+    setPassword("");
   };
 
   const handleDelete = async (passwordId) => {
@@ -62,35 +67,10 @@ function Dashboard({ user, setUser }) {
 
   const handleExport = () => {
     if (passwords.length === 0) return alert("No passwords to export!");
-
     const ws = XLSX.utils.json_to_sheet(passwords);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Passwords");
-
     XLSX.writeFile(wb, "XecureVault_Backup.xlsx");
-  };
-
-  const handleImport = (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: "array" });
-      const sheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[sheetName];
-      const importedPasswords = XLSX.utils.sheet_to_json(sheet);
-
-      importedPasswords.forEach((pwd) => {
-        if (pwd.website && pwd.username && pwd.password) {
-          handleSavePassword(pwd.website, pwd.username, pwd.password);
-        }
-      });
-
-      alert("Passwords imported successfully!");
-    };
-    reader.readAsArrayBuffer(file);
   };
 
   const filteredPasswords = passwords.filter((pwd) =>
@@ -99,45 +79,57 @@ function Dashboard({ user, setUser }) {
   );
 
   return (
-    <div>
-      <h2>Welcome, {user?.email}</h2>
-      <AddPasswordForm onSave={handleSavePassword} />
-
+    <div className="dashboard-container neumorphism">
+      <h2 className="welcome-message">Welcome, {user?.email}</h2>
+      
+      {/* Add Password Section */}
+      <div className="password-entry">
+        <input type="text" placeholder="Website" value={website} onChange={(e) => setWebsite(e.target.value)} className="input-field" />
+        <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} className="input-field" />
+        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="input-field" />
+        <button onClick={handleSavePassword} className="add-button">Save</button>
+      </div>
+      
       {/* Search Bar */}
-      <input
-        type="text"
-        placeholder="Search by website or username..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        style={{ marginBottom: "10px", padding: "5px", width: "80%" }}
-      />
-
-      <h3>Your Saved Passwords:</h3>
-      {copyMessage && <p style={{ color: "green" }}>{copyMessage}</p>}
-
-      {filteredPasswords.length === 0 ? (
-        <p>No matching passwords found.</p>
-      ) : (
-        <ul>
-          {filteredPasswords.map((pwd) => (
-            <li key={pwd.id}>
-              <strong>{pwd.website}</strong> - {pwd.username} - {pwd.password}
-              <button onClick={() => handleCopy(pwd.password)} style={{ marginLeft: "10px" }}>
-                Copy
-              </button>
-              <button onClick={() => handleDelete(pwd.id)} style={{ marginLeft: "10px", color: "red" }}>
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      {/* Backup & Restore */}
-      <button onClick={handleExport} style={{ marginRight: "10px" }}>Export Backup</button>
-      <input type="file" accept=".xlsx" onChange={handleImport} />
-
-      <button onClick={handleLogout} style={{ display: "block", marginTop: "10px" }}>Log Out</button>
+      <input type="text" placeholder="Search by website or username..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="search-bar full-width" />
+      
+      {/* Stored Passwords Table */}
+      <table className="password-table">
+        <thead>
+          <tr>
+            <th>Website</th>
+            <th>Username</th>
+            <th>Password</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredPasswords.length === 0 ? (
+            <tr><td colSpan="4">No matching passwords found.</td></tr>
+          ) : (
+            filteredPasswords.map((pwd) => (
+              <tr key={pwd.id}>
+                <td>{pwd.website}</td>
+                <td>{pwd.username}</td>
+                <td>••••••••</td>
+                <td>
+                  <button onClick={() => handleCopy(pwd.password)}>Copy</button>
+                  <button onClick={() => handleDelete(pwd.id)} className="delete-button">Delete</button>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+      
+      {/* Bottom Section */}
+      <div className="bottom-bar">
+        <button onClick={handleLogout} className="logout-button full-width">Log Out</button>
+        <div className="export-section">
+          <button onClick={handleExport} className="export-button">Export Backup</button>
+          <input type="file" accept=".xlsx" onChange={() => {}} />
+        </div>
+      </div>
     </div>
   );
 }

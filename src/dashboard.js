@@ -5,7 +5,8 @@ import AddPasswordForm from './AddPasswordForm';
 
 function Dashboard({ user, setUser }) {
   const [passwords, setPasswords] = useState([]);
-  const [copyMessage, setCopyMessage] = useState(""); // State for copy feedback
+  const [searchQuery, setSearchQuery] = useState("");
+  const [copyMessage, setCopyMessage] = useState("");
 
   useEffect(() => {
     if (user) {
@@ -30,24 +31,39 @@ function Dashboard({ user, setUser }) {
   };
 
   const handleCopy = (password) => {
-    navigator.clipboard.writeText(password); // Copy to clipboard
-    setCopyMessage("Password copied!"); // Show feedback
-    setTimeout(() => setCopyMessage(""), 2000); // Hide message after 2 sec
+    navigator.clipboard.writeText(password);
+    setCopyMessage("Password copied!");
+    setTimeout(() => setCopyMessage(""), 2000);
   };
+
+  // Filter passwords based on search query
+  const filteredPasswords = passwords.filter((pwd) =>
+    pwd.website.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    pwd.username.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div>
       <h2>Welcome, {user?.email}</h2>
       <AddPasswordForm onSave={handleSavePassword} />
 
+      {/* Search Bar */}
+      <input
+        type="text"
+        placeholder="Search by website or username..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        style={{ marginBottom: "10px", padding: "5px", width: "80%" }}
+      />
+
       <h3>Your Saved Passwords:</h3>
-      {copyMessage && <p style={{ color: "green" }}>{copyMessage}</p>} {/* Show copy message */}
-      
-      {passwords.length === 0 ? (
-        <p>No passwords saved yet.</p>
+      {copyMessage && <p style={{ color: "green" }}>{copyMessage}</p>}
+
+      {filteredPasswords.length === 0 ? (
+        <p>No matching passwords found.</p>
       ) : (
         <ul>
-          {passwords.map((pwd) => (
+          {filteredPasswords.map((pwd) => (
             <li key={pwd.id}>
               <strong>{pwd.website}</strong> - {pwd.username} - {pwd.password}
               <button onClick={() => handleCopy(pwd.password)} style={{ marginLeft: "10px" }}>
@@ -60,7 +76,7 @@ function Dashboard({ user, setUser }) {
           ))}
         </ul>
       )}
-      
+
       <button onClick={handleLogout}>Log Out</button>
     </div>
   );

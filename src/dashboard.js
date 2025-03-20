@@ -12,6 +12,29 @@ function Dashboard({ user, setUser }) {
     if (user) {
       fetchPasswords(user.uid).then(setPasswords);
     }
+
+    let inactivityTimer;
+
+    const resetTimer = () => {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(() => {
+        alert("You have been logged out due to inactivity.");
+        handleLogout();
+      }, 5 * 60 * 1000); // 5 minutes
+    };
+
+    window.addEventListener("mousemove", resetTimer);
+    window.addEventListener("keypress", resetTimer);
+    window.addEventListener("click", resetTimer);
+
+    resetTimer(); // Start timer
+
+    return () => {
+      window.removeEventListener("mousemove", resetTimer);
+      window.removeEventListener("keypress", resetTimer);
+      window.removeEventListener("click", resetTimer);
+      clearTimeout(inactivityTimer);
+    };
   }, [user]);
 
   const handleLogout = async () => {
@@ -36,7 +59,6 @@ function Dashboard({ user, setUser }) {
     setTimeout(() => setCopyMessage(""), 2000);
   };
 
-  // Filter passwords based on search query
   const filteredPasswords = passwords.filter((pwd) =>
     pwd.website.toLowerCase().includes(searchQuery.toLowerCase()) ||
     pwd.username.toLowerCase().includes(searchQuery.toLowerCase())

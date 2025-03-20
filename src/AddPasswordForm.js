@@ -1,30 +1,46 @@
-// AddPasswordForm.js
 import React, { useState } from 'react';
+import { db } from './firebase'; // Import firestore instance
+import { collection, addDoc } from 'firebase/firestore'; // Import firestore methods
 
-function AddPasswordForm() {
+function AddPasswordForm({ user }) {
   const [service, setService] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const newPassword = { service, username, password };
-    // Save to localStorage (you can replace this with a database later)
-    const storedPasswords = JSON.parse(localStorage.getItem('passwords')) || [];
-    storedPasswords.push(newPassword);
-    localStorage.setItem('passwords', JSON.stringify(storedPasswords));
+    if (!service || !username || !password) {
+      setError('Please fill in all fields');
+      return;
+    }
 
-    // Clear form fields
-    setService('');
-    setUsername('');
-    setPassword('');
-    alert('Password added successfully!');
+    const newPassword = {
+      service,   // Website name
+      username,  // Username
+      password,  // Password
+      email: user.email,  // Authenticated user email
+    };
+
+    try {
+      // Save password to Firestore under "passwords" collection
+      await addDoc(collection(db, 'passwords'), newPassword);
+      setService('');
+      setUsername('');
+      setPassword('');
+      setError('');
+      alert('Password saved successfully!');
+    } catch (err) {
+      setError('Error saving password: ' + err.message);
+      console.error('Error saving password: ', err);
+    }
   };
 
   return (
     <div>
       <h3>Add New Password</h3>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <form onSubmit={handleSubmit}>
         <input
           type="text"

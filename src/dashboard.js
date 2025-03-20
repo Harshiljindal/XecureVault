@@ -1,26 +1,48 @@
 // Dashboard.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { db } from './firebase';  // Import Firestore db
+import { getDocs, collection, addDoc } from "firebase/firestore";
 
 function Dashboard({ user, setUser }) {
-  const [passwords, setPasswords] = useState([]); // State to store passwords
-  const [website, setWebsite] = useState(''); // State for website/service name
+  const [passwords, setPasswords] = useState([]);  // State to store passwords
+  const [website, setWebsite] = useState('');  // State for website/service name
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogout = async () => {
-    // Add your logout functionality here
-    setUser(null);
+    setUser(null);  // Handle your logout logic (e.g., using Firebase Authentication)
   };
 
-  const handleSavePassword = () => {
-    // Save password to the list
-    const newPassword = { website, username, password };
-    setPasswords([...passwords, newPassword]);
+  // Fetch passwords from Firestore when the component mounts
+  useEffect(() => {
+    const fetchPasswords = async () => {
+      try {
+        const passwordsCollection = collection(db, "passwords");  // Collection to store passwords
+        const passwordSnapshot = await getDocs(passwordsCollection);
+        const passwordList = passwordSnapshot.docs.map(doc => doc.data());
+        setPasswords(passwordList);  // Set the passwords in state
+      } catch (error) {
+        console.error("Error fetching passwords: ", error);
+      }
+    };
 
-    // Clear input fields after saving
-    setWebsite('');
-    setUsername('');
-    setPassword('');
+    fetchPasswords();
+  }, []);
+
+  const handleSavePassword = async () => {
+    try {
+      const newPassword = { website, username, password };
+      // Save the new password to Firestore
+      await addDoc(collection(db, "passwords"), newPassword);
+      setPasswords([...passwords, newPassword]);  // Update local state
+
+      // Clear input fields after saving
+      setWebsite('');
+      setUsername('');
+      setPassword('');
+    } catch (error) {
+      console.error("Error saving password: ", error);
+    }
   };
 
   // Function to copy text to clipboard
